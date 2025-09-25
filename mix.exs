@@ -52,13 +52,13 @@ defmodule Scenic.Mixfile do
       {:truetype_metrics, "~> 0.6"},
 
       # Tools
-      {:elixir_make, "~> 0.8.4", runtime: false},
-      {:ex_doc, "~> 0.34.1", only: :dev, runtime: false},
-      {:credo, "~> 1.7.7", only: [:dev, :test], runtime: false},
-      {:excoveralls, "~> 0.18.1", only: :test, runtime: false},
+      {:elixir_make, "~> 0.8", runtime: false},
+      {:ex_doc, "~> 0.34", only: :dev, runtime: false},
+      {:credo, "~> 1.7", only: [:dev, :test], runtime: false},
+      {:excoveralls, "~> 0.18", only: :test, runtime: false},
       {:inch_ex, "~> 2.0", only: [:dev, :docs], runtime: false},
-      {:dialyxir, "~> 1.4.3", only: :dev, runtime: false},
-      {:machete, "~> 0.3.3", only: :test}
+      {:dialyxir, "~> 1.4", only: :dev, runtime: false},
+      {:machete, "~> 0.3", only: :test}
     ]
   end
 
