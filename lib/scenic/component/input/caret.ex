@@ -16,6 +16,7 @@ defmodule Scenic.Component.Input.Caret do
 
   ## Options
   * `color` - any [valid color](Scenic.Primitive.Style.Paint.Color.html).
+  * `caret_hz` - The blink speed of the caret in hertz.
 
   You can change the color of the caret by setting the color option
 
@@ -54,7 +55,7 @@ defmodule Scenic.Component.Input.Caret do
 
   # caret blink speed in hertz
   @caret_hz 0.5
-  @caret_ms trunc(1000 / @caret_hz / 2)
+
 
   # ============================================================================
   # setup
@@ -82,6 +83,8 @@ defmodule Scenic.Component.Input.Caret do
   @doc false
   @impl Scenic.Scene
   def init(scene, height, opts) do
+    caret_hz = Keyword.get(opts, :caret_hz, @caret_hz)
+    caret_ms = trunc(1000 / caret_hz / 2)
     color =
       case opts[:color] do
         nil ->
@@ -111,7 +114,8 @@ defmodule Scenic.Component.Input.Caret do
         graph: graph,
         hidden: true,
         timer: nil,
-        focused: false
+        focused: false,
+        caret_ms: caret_ms
       )
       |> push_graph(graph)
 
@@ -126,9 +130,9 @@ defmodule Scenic.Component.Input.Caret do
   # --------------------------------------------------------
   @doc false
   @impl GenServer
-  def handle_cast(:start_caret, %{assigns: %{graph: graph, timer: nil}} = scene) do
+  def handle_cast(:start_caret, %{assigns: %{graph: graph, timer: nil, caret_ms: caret_ms}} = scene) do
     # start the timer
-    {:ok, timer} = :timer.send_interval(@caret_ms, :blink)
+    {:ok, timer} = :timer.send_interval(caret_ms, :blink)
 
     # show the caret
     graph = Graph.modify(graph, :caret, &update_opts(&1, hidden: false))
@@ -163,7 +167,7 @@ defmodule Scenic.Component.Input.Caret do
   # --------------------------------------------------------
   def handle_cast(
         :reset_caret,
-        %{assigns: %{graph: graph, timer: timer, focused: true}} = scene
+        %{assigns: %{graph: graph, timer: timer, focused: true, caret_ms: caret_ms}} = scene
       ) do
     # show the caret
     graph = Graph.modify(graph, :caret, &update_opts(&1, hidden: false))
@@ -171,7 +175,7 @@ defmodule Scenic.Component.Input.Caret do
     # stop the timer
     if timer, do: :timer.cancel(timer)
     # restart the timer
-    {:ok, timer} = :timer.send_interval(@caret_ms, :blink)
+    {:ok, timer} = :timer.send_interval(caret_ms, :blink)
 
     scene =
       scene
